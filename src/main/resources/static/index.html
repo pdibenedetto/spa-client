@@ -14,6 +14,7 @@
             }
             document.getElementById("stateValue").innerHTML = stateValue;
         }
+
         function generateCodeVerifier() {
             let returnValue;
             let randomByteArray = new Uint8Array(32);
@@ -60,10 +61,10 @@
         }
 
         function postAuthorize(state, authCode) {
-            alert("State " + state + " AuthCode " + authCode);
+            // alert("State " + state + " AuthCode " + authCode);
             let originalStateValue = document.getElementById("stateValue").innerHTML;
 
-            if(state === originalStateValue) {
+            if (state === originalStateValue) {
                 requestTokens(authCode);
             } else {
                 alert("Invalid state value received");
@@ -77,7 +78,7 @@
                 "client_id": "photo-app-pkce-client",
                 "code": authCode,
                 "code_verifier": codeVerifier,
-                "redirect_uri":"http://localhost:8181/authcodeReader.html"
+                "redirect_uri": "http://localhost:8181/authcodeReader.html"
             };
 
             $.ajax({
@@ -96,12 +97,13 @@
             document.getElementById("accessToken").innerHTML = data["access_token"];
         }
 
-        function getInfoFromResourceServer(){
+        function getInfoFromResourceServer() {
             let accessToken = document.getElementById("accessToken").innerHTML;
             $.ajax({
                 beforeSend: function (request) {
                     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
                     request.setRequestHeader("Authorization", "Bearer " + accessToken);
+                    alert(accessToken);
                 },
                 type: "GET",
                 url: "http://localhost:8082/users/status/check",
@@ -111,25 +113,28 @@
         }
 
         function postInfoFromAccessToken(data, status, jqXHR) {
-            alert(data);
+            alert(data + " status " + status + " jqXHR " + jqXHR);
         }
     </script>
 </head>
 <body>
-<h1>Index Page</h1>
-<div id="stateValue"></div>
-<div><input type="button" value="Generate State Value" onclick="generateOAuthState(30)"/></div>
+    <h1>Index Page</h1>
+    <div id="stateValue"></div>
+    <div><input type="button" value="Generate State Value" onclick="generateOAuthState(30)"/></div>
 
-<div id="codeVerifierValue"></div>
-<div><input type="button" value="Generate Code Verifier Value" onclick="generateCodeVerifier()"/></div>
+    <div id="codeVerifierValue"></div>
+    <div><input type="button" value="Generate Code Verifier Value" onclick="generateCodeVerifier()"/></div>
 
-<div id="codeChallengeValue"></div>
-<div><input type="button" value="Generate Code Challenge Value" onclick="generateCodeChallenge()"/></div>
+    <div id="codeChallengeValue"></div>
+    <div><input type="button" value="Generate Code Challenge Value" onclick="generateCodeChallenge()"/></div>
 
-<br/>
-<div><input type="button" value="Get Auth Code" onclick="getAuthCode()"/></div>
+    <br/>
+    <div><input type="button" value="Get Auth Code" onclick="getAuthCode()"/></div>
 
-<p>Access Token: <span id="accessToken"></span></p>
+    <p>Access Token: <span id="accessToken"></span></p>
 
+    <br/>
+    <div><input type="button" value="Load from Resource Server" onclick="getInfoFromResourceServer()"/></div>
+    <p></p>
 </body>
 </html>
